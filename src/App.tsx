@@ -1,8 +1,8 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { Response } from './interfaces/Characters.interface';
+import { Character, Response } from './interfaces';
 
-const QUERY = gql`
+const CHARACTER_QUERY = gql`
   query Character($name: String) {
     characters(filter: { name: $name }) {
       results {
@@ -18,9 +18,10 @@ function App() {
   const [form, setForm] = useState({ name: '' });
   const [nameToSearch, setNameToSearch] = useState('');
 
-  const { data, loading, error } = useQuery<Response>(QUERY, {
-    variables: { name: nameToSearch },
-  });
+  const { data, loading, error } = useQuery<Response<Character[]>>(
+    CHARACTER_QUERY,
+    { variables: { name: nameToSearch } }
+  );
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -46,7 +47,7 @@ function App() {
         <h1>Cargando personajes</h1>
       ) : (
         <div>
-          {data?.characters.results.map((character) => (
+          {data?.characters?.results.map((character) => (
             <div key={character.id}>
               <h1>{character.name}</h1>
               <img src={character.image} alt={character.name} />
