@@ -1,11 +1,13 @@
-interface Character {
-  results: {
-    id: number;
-    name: string;
-    image: string;
-  }[];
+export interface Response {
+  characters: Results;
 }
 
-export interface Response {
-  characters: Character;
+interface Results {
+  results: Character[];
+}
+
+interface Character {
+  id: number;
+  name: string;
+  image: string;
 }
