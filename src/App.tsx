@@ -1,39 +1,40 @@
 import { useQuery, gql } from '@apollo/client';
 import { Response } from './interfaces/Characters.interface';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
 const QUERY = gql`
-  query {
-    characters(page: 2) {
+  query Name($name: String!) {
+    characters(page: 2, filter: $name) {
       info {
         count
       }
       results {
-        id
         name
-        image
       }
     }
   }
 `;
 
 function App() {
-  const { data, loading } = useQuery<Response>(QUERY);
-  console.log(data?.characters.results);
+  const [form, setForm] = useState({ name: 'rick' });
+
+  const { data, loading } = useQuery<Response>(QUERY, {
+    variables: { name: form.name },
+  });
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {};
+
+  console.log(data, loading);
+
   return (
-    <>
-      {loading ? (
-        <h1>Cargando pesonajes</h1>
-      ) : (
-        <div>
-          {data?.characters.results.map((chracter) => (
-            <div key={chracter.id}>
-              <h1>{chracter.name}</h1>
-              <img src={chracter.image} alt={chracter.name} />
-            </div>
-          ))}
-        </div>
-      )}
-    </>
+    <form onSubmit={onSubmit}>
+      <input type="text" value={form.name} name="name" onChange={onChange} />
+      <button type="submit">Submit</button>
+    </form>
   );
 }
 
